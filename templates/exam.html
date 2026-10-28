@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agamotto — Exam in Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body class="exam-page">
+
+  <!-- Pre-exam overlay -->
+  <div class="pre-exam-overlay" id="preExamOverlay">
+    <div class="pre-exam-card">
+      <div class="pre-exam-logo">
+        <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+        <span class="logo-text">Agamotto</span>
+      </div>
+      <h2>Ready to Begin?</h2>
+      <p>Before your exam starts, please note the following rules:</p>
+      <ul class="exam-rules">
+        <li>🎥 Your webcam will be monitored throughout the exam</li>
+        <li>👁 Do not look away from the screen for extended periods</li>
+        <li>📱 No mobile phones or secondary devices</li>
+        <li>🖥 Keep this tab in focus — tab switching is logged</li>
+        <li>⏱ You have <strong id="preTimerDisplay">30 minutes</strong> to complete all questions</li>
+        <li>🔒 The exam auto-submits when time expires</li>
+      </ul>
+      <div class="pre-exam-info">
+        <span>Candidate: <strong>{{ username }}</strong></span>
+        <span>Questions: <strong>{{ questions | length }}</strong></span>
+      </div>
+      <button class="btn-primary btn-lg" id="startExamBtn">
+        <span>Start Exam &amp; Enable Proctoring</span>
+        <span class="btn-arrow">→</span>
+      </button>
+      <a href="/dashboard" class="btn-ghost">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Exam UI -->
+  <div class="exam-shell" id="examShell" style="display:none">
+
+    <!-- Top bar -->
+    <div class="exam-topbar">
+      <div class="topbar-brand">
+        <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+        <span>Agamotto</span>
+      </div>
+
+      <div class="topbar-center">
+        <div class="proctor-indicator" id="proctorIndicator">
+          <span class="proctor-dot"></span>
+          <span>Proctoring Active</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="timer-wrap" id="timerWrap">
+          <span class="timer-icon">⏱</span>
+          <span class="timer-display" id="timerDisplay">30:00</span>
+        </div>
+        <button class="btn-submit-top" id="submitTopBtn">Submit Exam</button>
+      </div>
+    </div>
+
+    <!-- Main exam area -->
+    <div class="exam-main">
+
+      <!-- Question panel -->
+      <div class="question-panel" id="questionPanel">
+
+        <!-- Progress bar -->
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- Question area -->
+        <div class="question-area" id="questionArea">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Navigation -->
+        <div class="question-nav">
+          <button class="btn-nav" id="prevBtn" onclick="navigate(-1)">← Prev</button>
+          <div class="q-counter">
+            Question <span id="qCurrent">1</span> of <span id="qTotal">{{ questions|length }}</span>
+          </div>
+          <button class="btn-nav btn-nav-next" id="nextBtn" onclick="navigate(1)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Sidebar: question map + webcam thumbnail -->
+      <div class="exam-sidebar">
+        <!-- Webcam thumbnail -->
+        <div class="cam-thumb-wrap">
+          <video id="camThumb" autoplay playsinline muted></video>
+          <div class="cam-label">◉ Live</div>
+        </div>
+
+        <!-- Question map -->
+        <div class="qmap-wrap">
+          <div class="qmap-title">Question Map</div>
+          <div class="qmap-grid" id="qmapGrid">
+            {% for q in questions %}
+            <button class="qmap-btn" id="qmap-{{ loop.index }}" onclick="goToQuestion({{ loop.index0 }})">
+              {{ loop.index }}
+            </button>
+            {% endfor %}
+          </div>
+          <div class="qmap-legend">
+            <span class="ql ql-unanswered">○ Unanswered</span>
+            <span class="ql ql-answered">● Answered</span>
+            <span class="ql ql-current">◈ Current</span>
+          </div>
+        </div>
+
+        <button class="btn-submit-full" id="submitSideBtn">
+          Submit Exam →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit confirmation modal -->
+  <div class="modal-overlay" id="submitModal" style="display:none">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3>Submit Exam?</h3>
+      </div>
+      <div class="modal-body">
+        <p id="submitModalMsg">You have answered <strong id="answeredCount">0</strong> of <strong>{{ questions|length }}</strong> questions.</p>
+        <p class="modal-warn">This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('submitModal')">Cancel</button>
+          <button class="btn-primary" id="confirmSubmitBtn">Submit →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embed questions data for JS -->
+  <script>
+    const QUESTIONS = {{ questions | tojson }};
+    const DURATION  = {{ duration }};
+  </script>
+  <script src="/static/js/exam.js"></script>
+</body>
+</html>

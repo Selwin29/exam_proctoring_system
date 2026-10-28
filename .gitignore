@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.env.*
+*.env
+.venv
+env/
+venv/
+
+# Proctoring capture files & personal webcam recordings/screenshots
+captures/*
+!captures/.gitkeep
+
+# Proctoring runtime logs
+logs/*
+!logs/.gitkeep

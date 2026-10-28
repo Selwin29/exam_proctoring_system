@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agamotto — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body class="dashboard-page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+      <span class="logo-text">Agamotto</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard" class="nav-item active">
+        <span class="nav-icon">⬡</span>Dashboard
+      </a>
+      <a href="/exam" class="nav-item {% if not user['face_embedding'] %}nav-locked{% endif %}" id="startExamLink">
+        <span class="nav-icon">✎</span>Take Exam
+      </a>
+      <a href="/logout" class="nav-item nav-logout">
+        <span class="nav-icon">⏻</span>Logout
+      </a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">{{ user['username'][0].upper() }}</div>
+      <div class="user-info">
+        <span class="user-name">{{ user['username'] }}</span>
+        <span class="user-tag">{% if user['face_embedding'] %}✓ Face registered{% else %}⚠ No face{% endif %}</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <header class="content-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="header-sub">{{ user['email'] }}</p>
+      </div>
+      <div class="header-badge">
+        {% if user['face_embedding'] %}
+        <span class="badge badge-ok">◉ Face Verified</span>
+        {% else %}
+        <span class="badge badge-warn">⚠ Setup Required</span>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Setup banner -->
+    {% if not user['face_embedding'] %}
+    <div class="setup-banner">
+      <div class="setup-banner-content">
+        <div class="setup-icon">◉</div>
+        <div>
+          <h3>Face Registration Required</h3>
+          <p>You must register your face before taking any exam. This ensures secure identity verification throughout the exam.</p>
+        </div>
+        <button class="btn-primary" onclick="openFaceModal()">Register Face →</button>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-icon">📝</div>
+        <div class="stat-card-body">
+          <span class="stat-card-n">{{ recent_sessions | length }}</span>
+          <span class="stat-card-l">Exams Taken</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🏆</div>
+        <div class="stat-card-body">
+          {% set scores = recent_sessions | selectattr('score') | list %}
+          <span class="stat-card-n">
+            {% if scores %}{{ (scores | sum(attribute='score') / scores|length) | round(1) }}{% else %}—{% endif %}
+          </span>
+          <span class="stat-card-l">Avg Score</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🛡</div>
+        <div class="stat-card-body">
+          <span class="stat-card-n">{% if user['face_embedding'] %}Active{% else %}None{% endif %}</span>
+          <span class="stat-card-l">Face Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent exams -->
+    <section class="section">
+      <h2 class="section-title">Recent Exams</h2>
+      {% if recent_sessions %}
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Score</th>
+              <th>Suspicion</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in recent_sessions %}
+            <tr>
+              <td class="mono">{{ s['id'] }}</td>
+              <td>{{ s['started_at'][:16] }}</td>
+              <td>
+                <span class="score-pill {% if s['score'] >= 7 %}score-high{% elif s['score'] >= 5 %}score-mid{% else %}score-low{% endif %}">
+                  {{ s['score'] }}/10
+                </span>
+              </td>
+              <td>
+                <span class="suspicion-bar">
+                  <span class="suspicion-fill" style="width:{{ s['suspicion_score'] }}%"></span>
+                  <span class="suspicion-val">{{ s['suspicion_score'] | round(1) }}%</span>
+                </span>
+              </td>
+              <td><span class="status-tag status-{{ s['status'] }}">{{ s['status'] }}</span></td>
+              <td>
+                {% if s['status'] == 'completed' %}
+                <a href="/result/{{ s['id'] }}" class="link-btn">View →</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>No exams yet. {% if user['face_embedding'] %}<a href="/exam">Start your first exam →</a>{% else %}Register your face first.{% endif %}</p>
+      </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <!-- Face Registration Modal -->
+  <div class="modal-overlay" id="faceModal" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Face Registration</h3>
+        <button class="modal-close" onclick="closeFaceModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="faceStep1">
+          <p class="modal-desc">Position your face in the frame, ensure good lighting, then click Capture.</p>
+          <div class="webcam-container">
+            <video id="webcamFeed" autoplay playsinline></video>
+            <canvas id="snapCanvas" style="display:none"></canvas>
+            <div class="webcam-overlay">
+              <div class="face-guide-ring"></div>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeFaceModal()">Cancel</button>
+            <button class="btn-primary" id="captureBtn" onclick="captureAndRegister()">
+              ◉ Capture &amp; Register
+            </button>
+          </div>
+        </div>
+        <div id="faceStep2" style="display:none">
+          <div class="face-result" id="faceResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

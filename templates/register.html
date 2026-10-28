@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agamotto — Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body class="auth-page">
+
+  <div class="auth-grid">
+    <!-- Left panel -->
+    <div class="auth-brand">
+      <div class="brand-inner">
+        <div class="brand-logo">
+          <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+          <span class="logo-text">Agamotto</span>
+        </div>
+        <h1 class="brand-headline">Secure.<br/>Intelligent.<br/>Proctored.</h1>
+        <p class="brand-sub">AI-powered exam integrity with real-time face tracking, gaze detection, and behavioral analysis.</p>
+        <div class="brand-stats">
+          <div class="stat"><span class="stat-n">99.2%</span><span class="stat-l">Accuracy</span></div>
+          <div class="stat"><span class="stat-n">&lt;50ms</span><span class="stat-l">Latency</span></div>
+          <div class="stat"><span class="stat-n">6-layer</span><span class="stat-l">Detection</span></div>
+        </div>
+        <div class="brand-decoration">
+          <div class="deco-ring r1"></div>
+          <div class="deco-ring r2"></div>
+          <div class="deco-ring r3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel — form -->
+    <div class="auth-form-panel">
+      <div class="auth-form-wrap">
+        <div class="form-header">
+          <h2>Create an account</h2>
+          <p>Sign up to prepare for your exams</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">
+          <span class="alert-icon">⚠</span>
+          <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form id="registerForm" class="auth-form" method="POST" action="/register">
+          <div class="field-group">
+            <label for="username">Username</label>
+            <div class="input-wrap">
+              <span class="input-icon">◈</span>
+              <input type="text" id="username" name="username"
+                     placeholder="your_username" required autocomplete="username"/>
+            </div>
+          </div>
+          
+          <div class="field-group">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+              <span class="input-icon">✉</span>
+              <input type="email" id="email" name="email"
+                     placeholder="user@example.com" required autocomplete="email"/>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">◉</span>
+              <input type="password" id="password" name="password"
+                     placeholder="••••••••" required autocomplete="new-password"/>
+            </div>
+          </div>
+          
+          <div class="field-group">
+            <label for="confirm">Confirm Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">◉</span>
+              <input type="password" id="confirm" name="confirm"
+                     placeholder="••••••••" required autocomplete="new-password"/>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="registerBtn">
+            <span class="btn-label">Sign Up</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </form>
+
+        <div id="successMsg" style="display: none; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; color: #10b981; gap: 1rem;">
+          <span style="font-size: 3rem;">✓</span>
+          <h3>Account Created!</h3>
+          <p>Redirecting to login...</p>
+        </div>
+
+        <div class="auth-switch">
+          <span>Already have an account?</span>
+          <a href="/login">Sign in →</a>
+        </div>
+
+        <div class="auth-note">
+          <span class="lock-icon">🔒</span>
+          Sessions are encrypted and face data never leaves your machine.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

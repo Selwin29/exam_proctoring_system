@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agamotto Dashboard | Security Monitor</title>
+  
+  <!-- Modern Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Styles (Glassmorphism + Dark Theme) -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="theme-dark">
+
+  <div class="app-container">
+    
+    <!-- ── Sidebar (Navigation & Identity) ─────────────────────────────── -->
+    <nav class="sidebar glass">
+      <div class="brand">
+        <div class="brand-logo"><i data-lucide="shield-check"></i></div>
+        <div class="brand-text">
+          <h1>Agamotto</h1>
+          <span>Enterprise Monitor</span>
+        </div>
+      </div>
+      
+      <div class="nav-links">
+        <a href="#" class="active"><i data-lucide="layout-dashboard"></i> Live Dashboard</a>
+        <a href="#"><i data-lucide="history"></i> Session History</a>
+        <a href="#"><i data-lucide="settings"></i> System Settings</a>
+        <a href="#"><i data-lucide="alert-triangle"></i> Policy Audit</a>
+      </div>
+
+      <div class="sidebar-status">
+        <div class="status-indicator">
+          <span class="pulse green"></span>
+          <span>System Healthy</span>
+        </div>
+        <div class="status-meta">
+          <small>Uptime: 2h 14m</small>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Main Monitoring Workspace ───────────────────────────────────── -->
+    <main class="workspace">
+      
+      <!-- Top Header -->
+      <header class="workspace-header glass">
+        <div class="header-left">
+          <div class="mode-badge">LIVE MONITORING</div>
+          <div class="stream-id">SESSION_ID: <span id="session-id">GA-7742</span></div>
+        </div>
+        <div class="header-right">
+          <div class="clock" id="clock">12:00:00 PM</div>
+          <button class="btn btn-primary"><i data-lucide="power"></i> Terminate Session</button>
+        </div>
+      </header>
+
+      <div class="workspace-grid">
+        
+        <!-- Left: Primary Monitor -->
+        <div class="grid-main">
+          <div class="monitor-frame glass">
+            <div class="monitor-header">
+              <div class="label"><i data-lucide="video"></i> PRIMARY CAMERA MONITOR</div>
+              <div class="stats" id="fps-display">30.0 FPS</div>
+            </div>
+            <div class="video-container">
+              <img src="/video_feed" alt="Primary Live Feed" id="video-feed">
+              
+              <!-- In-video Overlays -->
+              <div class="video-overlay top-right">
+                <div class="cam-id">CAM_01_PROCTOR</div>
+              </div>
+              <div class="video-overlay bottom-left">
+                <div class="alert-status" id="alert-status-text">Status: <span>SECURE</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metrics Footer Cards -->
+          <div class="metrics-grid">
+            <div class="stat-card glass">
+              <div class="card-icon blue"><i data-lucide="user"></i></div>
+              <div class="card-content">
+                <label>Face Status</label>
+                <span id="face-status">DETECTED</span>
+              </div>
+            </div>
+            <div class="stat-card glass">
+              <div class="card-icon purple"><i data-lucide="compass"></i></div>
+              <div class="card-content">
+                <label>Head Direction</label>
+                <span id="head-dir">CENTER</span>
+              </div>
+            </div>
+            <div class="stat-card glass">
+              <div class="card-icon orange"><i data-lucide="smartphone"></i></div>
+              <div class="card-content">
+                <label>Phone Detection</label>
+                <span id="phone-status">CLEAN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Violation Feed & Gauges -->
+        <div class="grid-side">
+          
+          <!-- Suspicion Gauge -->
+          <div class="panel glass panel-score">
+            <div class="panel-header">
+              <span>SUSPICION TRACKER</span>
+              <span class="score-pill" id="score-val">0.00</span>
+            </div>
+            <div class="gauge-container">
+              <div class="gauge-bar">
+                <div class="gauge-fill" id="score-gauge" style="width: 15%;"></div>
+                <div class="gauge-marker warn" style="left: 50%;"></div>
+                <div class="gauge-marker alert" style="left: 80%;"></div>
+              </div>
+              <div class="gauge-labels">
+                <span>CLEAR</span>
+                <span>CRITICAL</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Violation Feed (Ticker) -->
+          <div class="panel glass panel-ticker">
+            <div class="panel-header">
+              <span>VIOLATION LOG</span>
+              <span class="badge" id="violation-count">0</span>
+            </div>
+            <div class="ticker-body" id="violation-feed">
+              <div class="empty-state">No violations recorded</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Dashboard Logic -->
+  <script src="/static/app.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

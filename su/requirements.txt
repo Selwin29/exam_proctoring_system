@@ -1,0 +1,17 @@
+# Agamotto — Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core vision
+opencv-python>=4.8.0
+mediapipe>=0.10.0
+numpy>=1.24.0
+
+# YOLO phone detection
+ultralytics>=8.0.0    # YOLOv8 — installs PyTorch automatically
+
+# PyTorch (auto-installed by ultralytics, but specified for clarity)
+# For CUDA GPU: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# For CPU only: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Utilities (standard library — no install needed)
+# logging, collections, dataclasses, json, time, os, sys, argparse

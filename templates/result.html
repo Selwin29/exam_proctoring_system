@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agamotto — Exam Result</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body class="result-page">
+
+  <nav class="result-nav">
+    <div class="brand-logo">
+      <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+      <span class="logo-text">Agamotto</span>
+    </div>
+    <a href="/dashboard" class="btn-ghost">← Back to Dashboard</a>
+  </nav>
+
+  <div class="result-container">
+
+    <!-- Score hero -->
+    <div class="result-hero">
+      <div class="result-score-ring">
+        <svg class="score-svg" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="52" />
+          <circle class="ring-fill" cx="60" cy="60" r="52"
+            stroke-dasharray="326.7"
+            stroke-dashoffset="{{ 326.7 - (326.7 * exam_session['score'] / total) | round(1) }}"
+            id="scoreRing"/>
+        </svg>
+        <div class="score-center">
+          <span class="score-num">{{ exam_session['score'] }}</span>
+          <span class="score-den">/{{ total }}</span>
+        </div>
+      </div>
+
+      <div class="result-meta">
+        <h1>Exam Complete</h1>
+        <p class="result-date">{{ exam_session['submitted_at'][:16] if exam_session['submitted_at'] else 'N/A' }}</p>
+        <div class="result-grade">
+          {% set pct = (exam_session['score'] / total * 100) | round %}
+          {% if pct >= 80 %}
+            <span class="grade-badge grade-a">Excellent — {{ pct }}%</span>
+          {% elif pct >= 60 %}
+            <span class="grade-badge grade-b">Good — {{ pct }}%</span>
+          {% elif pct >= 40 %}
+            <span class="grade-badge grade-c">Average — {{ pct }}%</span>
+          {% else %}
+            <span class="grade-badge grade-d">Needs Improvement — {{ pct }}%</span>
+          {% endif %}
+        </div>
+
+        <!-- Suspicion meter -->
+        <div class="suspicion-meter-wrap">
+          <div class="suspicion-meter-label">
+            <span>Integrity Score</span>
+            <span class="mono">{{ (100 - exam_session['suspicion_score']) | round(1) }}%</span>
+          </div>
+          <div class="suspicion-meter-bar">
+            <div class="suspicion-meter-fill integrity-fill"
+                 style="width:{{ 100 - exam_session['suspicion_score'] }}%"></div>
+          </div>
+          <p class="suspicion-note">
+            {% if exam_session['suspicion_score'] < 20 %}
+              ✓ Clean session — no major violations detected
+            {% elif exam_session['suspicion_score'] < 50 %}
+              ⚠ Minor anomalies detected — review events below
+            {% else %}
+              ⛔ Significant integrity issues — manual review required
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Review -->
+    <section class="section">
+      <h2 class="section-title">Question Review</h2>
+      <div class="review-list">
+        {% for qr in question_results %}
+        <div class="review-item {{ 'review-correct' if qr['ok'] else 'review-wrong' }}">
+          <div class="review-header">
+            <span class="review-n">Q{{ loop.index }}</span>
+            <span class="review-topic">{{ qr['topic'] }}</span>
+            <span class="review-verdict">{{ '✓ Correct' if qr['ok'] else '✗ Wrong' }}</span>
+          </div>
+          <p class="review-question">{{ qr['text'] }}</p>
+          <div class="review-options">
+            {% for opt in qr['options'] %}
+            {% set i = loop.index0 %}
+            <div class="review-opt
+              {% if i == qr['correct'] %}opt-correct{% endif %}
+              {% if i == qr['user'] and not qr['ok'] %}opt-wrong{% endif %}">
+              <span class="opt-marker">
+                {% if i == qr['correct'] %}✓{% elif i == qr['user'] and not qr['ok'] %}✗{% else %}○{% endif %}
+              </span>
+              {{ opt }}
+              {% if i == qr['user'] %}<span class="your-ans-tag">Your answer</span>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Proctoring Events Log -->
+    <section class="section">
+      <h2 class="section-title">
+        Proctoring Log
+        <span class="event-count">{{ events | length }} events</span>
+      </h2>
+      {% if events %}
+      <div class="events-log">
+        {% for ev in events %}
+        <div class="event-row event-{{ ev['severity'] }}">
+          <span class="event-ts mono">{{ ev['ts'][11:19] }}</span>
+          <span class="event-type">{{ ev['event_type'] }}</span>
+          <span class="event-detail">{{ ev['detail'] or '—' }}</span>
+          <span class="event-sev sev-{{ ev['severity'] }}">{{ ev['severity'] }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">✓</div>
+        <p>No proctoring events recorded — clean session.</p>
+      </div>
+      {% endif %}
+    </section>
+
+  </div>
+
+  <script>
+    // Animate ring on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const ring = document.getElementById('scoreRing');
+      if (ring) {
+        ring.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
+      }
+    });
+  </script>
+</body>
+</html>

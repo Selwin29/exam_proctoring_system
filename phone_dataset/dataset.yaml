@@ -1,0 +1,105 @@
+names:
+  0: Beer
+  1: Cocktail
+  2: Table
+  3: Mobile phone
+  4: Digital clock
+  5: Computer keyboard
+  6: Office supplies
+  7: Camera
+  8: Human eye
+  9: Human ear
+  10: Human hair
+  11: Man
+  12: Human face
+  13: Person
+  14: Human hand
+  15: Hat
+  16: Jeans
+  17: Glasses
+  18: Vehicle registration plate
+  19: Car
+  20: Tablet computer
+  21: Land vehicle
+  22: Trousers
+  23: Boy
+  24: Woman
+  25: Human head
+  26: Human nose
+  27: Sunglasses
+  28: Laptop
+  29: Desk
+  30: Cat
+  31: Computer mouse
+  32: Human body
+  33: Human leg
+  34: Clothing
+  35: Furniture
+  36: Human arm
+  37: Plant
+  38: Fruit
+  39: Book
+  40: Food
+  41: Coffee cup
+  42: Coffee
+  43: Saucer
+  44: Watch
+  45: Flower
+  46: Houseplant
+  47: Bicycle
+  48: Girl
+  49: Tree
+  50: Wheel
+  51: Coat
+  52: Snack
+  53: Dessert
+  54: Suit
+  55: Mug
+  56: Ipod
+  57: Fashion accessory
+  58: Scale
+  59: Dress
+  60: Drink
+  61: Mammal
+  62: Cowboy hat
+  63: Sun hat
+  64: Power plugs and sockets
+  65: Snake
+  66: Tripod
+  67: Tool
+  68: Flute
+  69: Headphones
+  70: Human mouth
+  71: Juice
+  72: Dairy Product
+  73: Vehicle
+  74: Carnivore
+  75: Cosmetics
+  76: Baked goods
+  77: Building
+  78: Plate
+  79: Mirror
+  80: Dog
+  81: Belt
+  82: Shirt
+  83: Wall clock
+  84: Organ (Musical Instrument)
+  85: Musical keyboard
+  86: Piano
+  87: Billboard
+  88: Toy
+  89: Window
+  90: Picture frame
+  91: Cookie
+  92: Tie
+  93: Microphone
+  94: Bottle
+  95: Chair
+  96: Tableware
+  97: Poster
+  98: Box
+  99: Human beard
+  100: Pen
+  101: Flashlight
+path: C:\Users\asama\D\programs\Sem VI\Theory\CV\project_c\phone_dataset
+val: .\images\val\
